@@ -1,0 +1,6 @@
+services:
+  - type: worker
+    name: instagram-telegram-bot
+    env: python
+    plan: free
+    startCommand: python bot.py
