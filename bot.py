@@ -1,7 +1,7 @@
 import os
 import re
 import instaloader
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from telegram import (
     Update,
     InlineKeyboardButton,
