@@ -1,5 +1,4 @@
 python-telegram-bot==20.7
+moviepy==2.2.1
 instaloader
-moviepy
-Pillow
-ffmpeg-python
+requests
