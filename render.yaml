@@ -2,7 +2,6 @@ services:
   - type: worker
     name: instabot
     env: python
+    pythonVersion: 3.11.9
     buildCommand: pip install -r requirements.txt
     startCommand: python bot.py
-    runtime: python
-    pythonVersion: 3.11.9
