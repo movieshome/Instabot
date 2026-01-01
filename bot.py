@@ -2,6 +2,7 @@ import os
 import logging
 from telegram import Update
 from telegram.ext import (
+    Application,
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
@@ -9,46 +10,41 @@ from telegram.ext import (
 
 # ---------------- CONFIG ----------------
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-OWNER_ID = 968936791  # your Telegram ID
-# ----------------------------------------
 
+AUTHORIZED_USER_ID = 968936791  # your Telegram ID
+
+# ---------------- LOGGING ----------------
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
+    level=logging.INFO,
 )
+logger = logging.getLogger(__name__)
 
-# --------- ACCESS CONTROL ----------
-async def check_user(update: Update) -> bool:
-    return update.effective_user.id == OWNER_ID
-
-# --------- COMMANDS ----------
+# ---------------- HANDLERS ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not await check_user(update):
+    if update.effective_user.id != AUTHORIZED_USER_ID:
+        await update.message.reply_text("❌ Unauthorized access")
         return
 
     await update.message.reply_text(
-        "✅ Instabot is running!\n\n"
-        "Send an Instagram link to download media."
+        "✅ Instagram Downloader Bot is running\n\n"
+        "Send an Instagram link (post / reel / story)."
     )
 
-async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not await check_user(update):
-        return
-
-    await update.message.reply_text("🏓 Pong! Bot is alive.")
-
-# --------- MAIN ----------
+# ---------------- MAIN ----------------
 def main():
     if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN is missing")
+        raise RuntimeError("BOT_TOKEN environment variable not set")
 
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app: Application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("ping", ping))
 
-    print("🤖 Bot started (Python 3.13 compatible)")
+    logger.info("Bot started successfully")
+
+    # 🔥 THIS IS THE IMPORTANT PART 🔥
     app.run_polling(drop_pending_updates=True)
+
 
 if __name__ == "__main__":
     main()
