@@ -1,36 +1,54 @@
 import os
+import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes,
+)
 
-# ===== CONFIG =====
+# ---------------- CONFIG ----------------
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ALLOWED_USERS = [968936791]  # your Telegram ID
+OWNER_ID = 968936791  # your Telegram ID
+# ----------------------------------------
 
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
+# --------- ACCESS CONTROL ----------
+async def check_user(update: Update) -> bool:
+    return update.effective_user.id == OWNER_ID
+
+# --------- COMMANDS ----------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-
-    if user_id not in ALLOWED_USERS:
-        await update.message.reply_text("❌ You are not allowed to use this bot.")
+    if not await check_user(update):
         return
 
     await update.message.reply_text(
-        "✅ Bot is running!\n\n"
+        "✅ Instabot is running!\n\n"
         "Send an Instagram link to download media."
     )
 
+async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_user(update):
+        return
 
+    await update.message.reply_text("🏓 Pong! Bot is alive.")
+
+# --------- MAIN ----------
 def main():
     if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN is not set in environment variables")
+        raise RuntimeError("BOT_TOKEN is missing")
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("ping", ping))
 
-    print("🤖 Bot started successfully...")
-    app.run_polling()
-
+    print("🤖 Bot started (Python 3.13 compatible)")
+    app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
     main()
