@@ -12,7 +12,7 @@ from telegram.ext import (
 
 # ================= CONFIG =================
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")  # set in Render
+BOT_TOKEN = os.getenv("8501654947:AAHagKJG4LqM-YgKudEVBsGgMxvwfYWh-yo")  # set in Render
 OWNER_ID = 968936791  # your Telegram ID
 
 # ================= FLASK SERVER =================
